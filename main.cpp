@@ -23,6 +23,6 @@ int main()
     e.addEdge(Edge(2, 8, 4));
 
     Kruskal kruskal = Kruskal(e);
-
     kruskal.showMst();
+
 }

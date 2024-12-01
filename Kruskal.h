@@ -1,7 +1,3 @@
-//
-// Created by felipe on 12/1/24.
-//
-
 #ifndef KRUSKAL_H
 #define KRUSKAL_H
 #include <iostream>
@@ -10,25 +6,23 @@
 #include "EdgeWeightedGraph.h"
 #include <set>
 #include "UnionFind.h"
-using namespace std;
 
+using namespace std;
 
 class Kruskal
 {
-private:
+public:
     vector<Edge> mst;
 
-public:
     Kruskal(EdgeWeightedGraph g)
     {
         multiset<Edge, CompareEdge> edges = g.edges();
-
-        UnionFind uf(g.getV());
+        UnionFind uf(g.V);
         while (!edges.empty() && mst.size() < g.getNumberOfVertices() - 1)
         {
             Edge e = *edges.begin();
-            int v = e.either();
-            int w = e.other(v);
+            int v = e.v;
+            int w = e.w;
             if (!uf.connected(v, w))
             {
                 uf.unite(v, w);
@@ -42,8 +36,8 @@ public:
     {
         for (int i = 0; i < mst.size(); i++)
         {
-            int v = mst[i].either();
-            int w = mst[i].other(v);
+            int v = mst[i].v;
+            int w = mst[i].w;
             cout << "{" << v << " " << w << "}" << endl;
         }
     }
