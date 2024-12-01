@@ -12,7 +12,7 @@ using namespace std;
 struct CompareEdge
 {
   bool operator()(const Edge& e1, const Edge& e2) const {
-      return e1.weight > e2.weight;
+      return e1.weight < e2.weight;
   }
 };
 
@@ -34,7 +34,7 @@ class EdgeWeightedGraph {
             int v = e.either();
             int w = e.other(v);
             adj[v].push_back(e);
-            adj[w].push_back(e);
+            // adj[w].push_back(e);
           };
 
           vector<Edge> getAdj(int v){
@@ -47,13 +47,28 @@ class EdgeWeightedGraph {
 
           int getNumberOfVertices()
           {
-            int result = 0;
+            vector<bool> visited(V, false);
+            int counter = 0;
             for (int i = 0; i < V; i++)
             {
-              if (!adj[i].empty())
-                result++;
+              for (auto e : adj[i])
+              {
+                int v = e.either();
+                int w = e.other(v);
+                if (visited[v] == false)
+                {
+                  visited[e.either()] = true;
+                  counter++;
+
+                }
+                if (visited[w] == false)
+                {
+                  visited[w] = true;
+                  counter++;
+                }
+              }
             }
-            return result;
+            return counter;
           }
 
 
@@ -61,8 +76,6 @@ class EdgeWeightedGraph {
            multiset<Edge, CompareEdge> edges;
            for(int i = 0; i < V; i++){
              for(Edge e : adj[i]){
-               Edge e2 = e;
-               if(edges.find(e2) == edges.end())
                edges.insert(e);
              }
            }
