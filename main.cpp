@@ -22,6 +22,7 @@ int main()
     e.addEdge(Edge(2, 7, 2));
     e.addEdge(Edge(2, 8, 4));
 
+    e.get_edges();
     Kruskal kruskal = Kruskal(e);
     kruskal.showMst();
 
