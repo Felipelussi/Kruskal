@@ -8,7 +8,7 @@ using namespace std;
 class UnionFind
 {
 public: //Especificador de acesso
-    std::vector<int> elements;
+    vector<int> elements;
 
     //Construtor
     UnionFind(int n)
@@ -23,22 +23,23 @@ public: //Especificador de acesso
         return elements[p] == elements[q];
     }
 
-    void unite(int p, int q)
+    void unir(int p, int q)
     {
+        int inicial = elements[p];
         for (int i = 0; i < elements.size(); i++)
-            if (elements[i] == p)
+            if (elements[i] == inicial)
                 elements[i] = elements[q];
     }
 };
 
 class Edge
 {
-public:  //Especificador de acesso
+public: //Especificador de acesso
     int v;
     int w;
     int weight;
 
-    Edge(int v, int w, int weight)   //Construtor
+    Edge(int v, int w, int weight) //Construtor
     {
         this->v = v;
         this->w = w;
@@ -46,7 +47,6 @@ public:  //Especificador de acesso
     };
 };
 
-using namespace std;
 
 struct CompareEdge //Comparador
 {
@@ -56,11 +56,13 @@ struct CompareEdge //Comparador
     }
 };
 
-struct CompareEdgeSet {
-    bool operator()(const Edge& e1, const Edge& e2) const {
+struct CompareEdgeSet
+{
+    bool operator()(const Edge& e1, const Edge& e2) const
+    {
         if (e1.weight != e2.weight) return e1.weight < e2.weight; // Compare weights
-        if (e1.v != e2.v) return e1.v < e2.v;             // Break ties by src
-        return e1.w < e2.w;                                // Break further ties by dest
+        if (e1.v != e2.v) return e1.v < e2.v; // Break ties by src
+        return e1.w < e2.w; // Break further ties by dest
     }
 };
 
@@ -73,13 +75,13 @@ public:
     EdgeWeightedGraph(int V)
     {
         this->V = V;
-        adj = vector<vector<Edge>>(V, vector<Edge>());
+        adj = vector<vector<Edge>>(V, vector<Edge>()); //inicializa vetor de vértices que aponta para vetor de arestas
     }
 
     void addEdge(Edge e)
     {
         adj[e.v].push_back(e);
-        adj[e.w].push_back(Edge(e.v, e.w, e.weight));
+        adj[e.w].push_back(e);
     };
 
     int getNumberOfVertices()
@@ -95,17 +97,12 @@ public:
     }
 
 
-    set<Edge, CompareEdgeSet> get_edges()
+    set<Edge, CompareEdgeSet> get_edges() //Retorna conjunto de todas as arestas únicas do grafo
     {
         set<Edge, CompareEdgeSet> edges;
         for (int i = 0; i < V; i++)
             for (auto e : adj[i])
-                edges.insert(Edge(e.v, e.w, e.weight));
-
-        for (auto e : edges)
-        {
-            cout << e.v << ", " << e.w << ", " << e.weight << endl;
-        }
+                edges.insert(e);
         return edges;
     }
 };
@@ -113,38 +110,40 @@ public:
 class Kruskal
 {
 public:
-    vector<Edge> mst;
+    vector<Edge> arvoreGeradoraMinima;
 
     Kruskal(EdgeWeightedGraph g)
     {
-        // multiset<Edge, CompareEdge> edges = g.edges();
-        priority_queue<Edge, vector<Edge>, CompareEdge> edges;
+        priority_queue<Edge, vector<Edge>, CompareEdge> filaArestas;
+        //Fila de prioridade usada para ordenar o conjunto de arestas pelo seu peso
         for (auto e : g.get_edges())
         {
-            edges.push(e);
+            filaArestas.push(e);
         }
+
         UnionFind uf(g.V);
-        while (!edges.empty() && mst.size() < g.getNumberOfVertices() - 1)
+
+        while (!filaArestas.empty() && arvoreGeradoraMinima.size() < g.getNumberOfVertices() - 1)
         {
-            Edge e = edges.top();
+            Edge e = filaArestas.top();
             int v = e.v;
             int w = e.w;
             if (!uf.connected(v, w))
             {
-                uf.unite(v, w);
-                mst.push_back(e);
+                uf.unir(v, w);
+                arvoreGeradoraMinima.push_back(e);
             }
-            edges.pop();
+            filaArestas.pop();
         }
     }
 
     void showMst()
     {
-        for (int i = 0; i < mst.size(); i++)
+        for (int i = 0; i < arvoreGeradoraMinima.size(); i++)
         {
-            int v = mst[i].v;
-            int w = mst[i].w;
-            cout << "{" << v << " " << w << "}" << endl;
+            int v = arvoreGeradoraMinima[i].v;
+            int w = arvoreGeradoraMinima[i].w;
+            cout << "Aresta: {" << v << ", " << w << "} Peso: " << arvoreGeradoraMinima[i].weight << endl;
         }
     }
 };
@@ -152,19 +151,36 @@ public:
 
 int main()
 {
-    EdgeWeightedGraph e(10);
+    EdgeWeightedGraph e(17);
 
-    e.addEdge(Edge(7, 8, 1));
-    e.addEdge(Edge(1, 2, 3));
-    e.addEdge(Edge(1, 3, 4));
-    e.addEdge(Edge(3, 2, 5));
-    e.addEdge(Edge(2, 6, 3));
-    e.addEdge(Edge(2, 7, 2));
-    e.addEdge(Edge(2, 8, 4));
+    e.addEdge(Edge(1, 2, 53));
+    e.addEdge(Edge(1, 6, 97));
+    e.addEdge(Edge(1, 8, 32));
+    e.addEdge(Edge(1, 13, 80));
+    e.addEdge(Edge(1, 9, 47));
+    e.addEdge(Edge(1, 7, 76));
+    e.addEdge(Edge(1, 3, 82));
+    e.addEdge(Edge(2, 4, 30));
+    e.addEdge(Edge(3, 4, 80));
+    e.addEdge(Edge(3, 5, 90));
+    e.addEdge(Edge(4, 6, 48));
+    e.addEdge(Edge(5, 7, 83));
+    e.addEdge(Edge(6, 10, 90));
+    e.addEdge(Edge(6, 12, 78));
+    e.addEdge(Edge(7, 9, 46));
+    e.addEdge(Edge(8, 10, 51));
+    e.addEdge(Edge(9, 11, 23));
+    e.addEdge(Edge(10, 14, 40));
+    e.addEdge(Edge(10, 12, 152));
+    e.addEdge(Edge(10, 16, 22));
+    e.addEdge(Edge(11, 13, 33));
+    e.addEdge(Edge(12, 14, 96));
+    e.addEdge(Edge(13, 15, 41));
+    e.addEdge(Edge(14, 16, 38));
+    e.addEdge(Edge(15, 16, 80));
 
-    e.get_edges();
+
 
     Kruskal kruskal = Kruskal(e);
     kruskal.showMst();
-
 }
